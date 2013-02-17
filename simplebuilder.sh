@@ -21,7 +21,7 @@ while read -r line; do
 	fi
 
 	pushd "/var/abs/$line" > /dev/null
-	makepkg -i --noconfirm
+	makepkg --syncdeps --install --noconfirm
 	if [ $? -eq 0 ]; then # XXX: $? of makepkg
 		success=$(($success + 1))
 		echo "$line" >> $cwd/successes
