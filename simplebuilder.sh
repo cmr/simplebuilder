@@ -10,17 +10,24 @@ function on_the_way_out() {
 	exit 0
 }
 
+cwd=$(pwd)
+
 trap on_the_way_out SIGINT
 
 while read -r line; do
+	if [ ! -d "/var/abs/$line" ]; then
+		echo "$line" >> $cwd/nonexistent
+		continue
+	fi
+
 	pushd "/var/abs/$line" > /dev/null
 	makepkg -i --noconfirm
-	if [ $? -eq 0 ]; then
+	if [ $? -eq 0 ]; then # XXX: $? of makepkg
 		success=$(($success + 1))
-		echo "$line" >> successes
+		echo "$line" >> $cwd/successes
 	else
 		fail=$(($fail+1))
-		echo "$line" >> failures
+		echo "$line" >> $cwd/failures
 	fi
 	popd > /dev/null
 done
